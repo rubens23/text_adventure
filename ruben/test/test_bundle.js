@@ -82,12 +82,12 @@
 	    expect(firstctrl.location.start.commands.length).toBe(1);
 	  });
 
-	  it('should have three commands in the stadium', () =>  {
-	    expect(firstctrl.location.stadium.commands.length).toBe(3);
+	  it('should have one command in the stadium', () =>  {
+	    expect(firstctrl.location.stadium.commands.length).toBe(1);
 	  });
 
-	  it('should have two commands on the courtwithoutball location', () => {
-	    expect(firstctrl.location.courtwithoutball.commands.length).toBe(2);
+	  it('should have one command on the courtwithoutball location', () => {
+	    expect(firstctrl.location.courtwithoutball.commands.length).toBe(1);
 	  });
 
 	  it('should have one command on the courtwithball location', () => {
@@ -34289,124 +34289,120 @@
 	};
 
 	function GameController() {
-	      this.userLocation = 'start';
-	      this.userHasBall = false;
-	      this.command = '';
-	      this.gamelog = [];
-	      this.location = {
-	        'start': {
-	          commands: ['Enter ? for available commands at any time.'],
-	          prompt: 'Welcome to the NBA Finals. You are in a stadium with a Monstar from Space Jam.'
-	        },
-	        'stadium': {
-	          commands: ['take ball', 'look for the basket', 'say <message>', 'walk onto court'],
-	          prompt: 'You are on the court. There is a spalding ball on the halfcourt line.'
-	        },
-	        'courtwithoutball': {
-	          commands: ['walk through door', 'say <message>'],
-	          prompt: 'You are on the court with a Monstar.'
-	        },
-	        'courtwithball': {
-	          commands: ['shoot ball'],
-	          prompt: 'You are on the court with a Monstar and you have a ball.'
-	        }
-	      }
-	    };
-	    GameController.prototype.startGame = function() {
-	      this.gamelog = [];
-	      this.userLocation = 'start';
-	      this.userHasBall = false;
-	      this.command = '';
+	  this.userLocation = 'start';
+	  this.userHasBall = false;
+	  this.command = '';
+	  this.gamelog = [];
+	  this.location = {
+	    'start': {
+	      commands: ['Enter ? for available commands.'],
+	      prompt: 'Welcome to the NBA Finals. You are in a stadium with a Monstar from Space Jam.'
+	    },
+	    'stadium': {
+	      commands: ['walk onto court'],
+	      prompt: 'You are on the court. There is a spalding ball on the halfcourt line.'
+	    },
+	    'courtwithoutball': {
+	      commands: ['take ball'],
+	      prompt: 'You are on the court with a Monstar and there is a ball'
+	    },
+	    'courtwithball': {
+	      commands: ['shoot ball'],
+	      prompt: 'Shoot the ball!'
+	    }
+	  };
+	}
+	GameController.prototype.startGame = function() {
+	  this.gamelog = [];
+	  this.userLocation = 'start';
+	  this.userHasBall = false;
+	  this.command = '';
+	  this.gamelog.push({
+	    src: 'game',
+	    msg: this.location.start.prompt
+	  });
+	  var gamelog = this.gamelog;
+	  this.location.start.commands.forEach(function(item) {
+	    gamelog.push({
+	      src: 'command',
+	      msg: item
+	    });
+	  });
+	  this.userLocation = 'courtwithoutball';
+	};
+	GameController.prototype.processInput = function() {
+	  this.gamelog.push({
+	    src: 'user',
+	    msg: this.command
+	  });
+
+	  switch (this.command) {
+	    case '?':
 	      this.gamelog.push({
 	        src: 'game',
-	        msg: this.location.start.prompt
+	        msg: this.currentHelpMsg()
 	      });
-	      var gamelog = this.gamelog;
-	      this.location.start.commands.forEach(function(item) {
-	        gamelog.push({
-	          src: 'command',
-	          msg: item
+	      break;
+	    case 'walk onto court':
+	      var currentLocation = this.userLocation;
+	      if (currentLocation === 'stadium') {
+	        currentLocation = this.userLocation = this.userHasBall ? 'courtwithball' : 'courtwithoutball';
+	        this.gamelog.push({
+	          src: 'game',
+	          msg: this.location[currentLocation].prompt
 	        });
-	      });
-	      this.userLocation = 'courtwithoutball';
-	    };
-	    GameController.prototype.processInput = function() {
+	      } else {
+	        this.userLocation = 'stadium';
+	        this.gamelog.push({
+	          src: 'game',
+	          msg: this.location.stadium.prompt
+	        });
+	      }
+
+
 	      this.gamelog.push({
-	        src: 'user',
-	        msg: this.command
+	        src: 'game',
+	        msg: this.currentHelpMsg()
 	      });
-
-	      switch (this.command) {
-	      case '?':
+	      break;
+	    case 'take ball':
+	      this.userHasBall = true;
+	      break;
+	    default:
+	      var sayArr = this.command.split(' ');
+	      if (sayArr[0] === 'say') {
 	        this.gamelog.push({
 	          src: 'game',
-	          msg: this.currentHelpMsg()
+	          msg: sayArr[1] || 'SAY SOMETHING!'
 	        });
-	        break;
-	      case 'walk onto court':
-	        var currentLocation = this.userLocation;
-	        if (currentLocation === 'stadium') {
-	          currentLocation = this.userLocation = this.userHasWeapon ? 'courtwithball' : 'courtwithoutball';
-	          this.gamelog.push({
-	            src: 'game',
-	            msg: this.location[currentLocation].prompt
-	          });
-	        } else {
-	          this.userLocation = 'stadium';
-	          this.gamelog.push({
-	            src: 'game',
-	            msg: this.location.weaponroom.prompt
-	          });
-	        }
-
-
+	      } else {
 	        this.gamelog.push({
 	          src: 'game',
-	          msg: this.currentHelpMsg()
+	          msg: 'BAD COMMAND: Enter ? to see commands'
 	        });
-	        break;
-
-	      case 'take ball':
-	        this.userHasWeapon = true;
-	        break;
-
-	      default:
-	        var sayArr = this.command.split(' ');
-	        if (sayArr[0] === 'say') {
-	          this.gamelog.push({
-	            src: 'game',
-	            msg: sayArr[1] || 'SAY SOMETHING!'
-	          });
-	        } else {
-	          this.gamelog.push({
-	            src: 'game',
-	            msg: 'BAD COMMAND: Enter ? to see commands'
-	          });
-	        }
 	      }
-	      this.command = ''; //clear command after processing
+	  }
+	  this.command = ''; //clear command after processing
 
-	    };
-	    GameController.prototype.currentHelpMsg = function() {
-	      var str = '';
-	      switch (this.userLocation) {
-
-	      case 'stadium':
-	        this.location.weaponroom.commands.forEach(function(item, index) {
-	          str += index > 0 ? ' | ' : '';
-	          str += item;
-	        });
-	        break;
-
-	      case 'courtwithoutball':
-	        this.location.courtwithoutball.commands.forEach(function(item, index) {
-	          str += index > 0 ? ' | ' : '';
-	          str += item;
-	        });
-	        break;
-	      }
-	      return str;
-	    };
+	};
+	GameController.prototype.currentHelpMsg = function() {
+	  var str = '';
+	  switch (this.userLocation) {
+	    case 'stadium':
+	      this.location.stadium.commands.forEach(function(item, index) {
+	        str += index > 0 ? ' | ' : '';
+	        str += item;
+	      });
+	      break;
+	    case 'courtwithoutball':
+	      this.location.courtwithoutball.commands.forEach(function(item, index) {
+	        str += index > 0 ? ' | ' : '';
+	        str += item;
+	      });
+	      break;
+	  }
+	  return str;
+	};
 
 
 /***/ }

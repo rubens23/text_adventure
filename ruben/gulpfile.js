@@ -29,7 +29,7 @@ gulp.task('bundle:test', () => {
         filename: 'test_bundle.js'
       }
     }))
-    .pipe(gulp.dest(__dirname + '/test'))
+    .pipe(gulp.dest(__dirname + '/test'));
 });
 
 gulp.task('watch', () => {
@@ -38,4 +38,4 @@ gulp.task('watch', () => {
   gulp.watch('./app/css/app.css', ['copy']);
 });
 
-gulp.task('default', ['bundle:test', 'bundle', 'copy',]);
+gulp.task('default', ['bundle:test', 'bundle', 'copy']);

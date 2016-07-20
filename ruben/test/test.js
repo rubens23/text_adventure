@@ -17,8 +17,8 @@ describe('Controller Tests', () => {
   });
 
   it('should have a property notes', ()=>{
-      expect(Array.isArray(firstctrl.gamelog)).toBe(true);
-    });
+    expect(Array.isArray(firstctrl.gamelog)).toBe(true);
+  });
 
   it('should have a command property with type of String', () => {
     expect(typeof firstctrl.command).toBe('string');
@@ -36,12 +36,12 @@ describe('Controller Tests', () => {
     expect(firstctrl.location.start.commands.length).toBe(1);
   });
 
-  it('should have three commands in the stadium', () =>  {
-    expect(firstctrl.location.stadium.commands.length).toBe(3);
+  it('should have one command in the stadium', () =>  {
+    expect(firstctrl.location.stadium.commands.length).toBe(1);
   });
 
-  it('should have two commands on the courtwithoutball location', () => {
-    expect(firstctrl.location.courtwithoutball.commands.length).toBe(2);
+  it('should have one command on the courtwithoutball location', () => {
+    expect(firstctrl.location.courtwithoutball.commands.length).toBe(1);
   });
 
   it('should have one command on the courtwithball location', () => {
